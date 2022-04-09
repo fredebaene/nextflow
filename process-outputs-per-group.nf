@@ -1,20 +1,27 @@
 #!/usr/bin/env nextflow
 
-// Create channel emitting fastq files
+/*
+================================================================================
+AIM : Group files by a glob pattern and execute a task for each group of files.
+================================================================================
+*/
+
+// Create channel emitting grouped fastq files
 Channel
-    .fromPath( "${params.aws_input_bucket}/*.fastq", checkIfExists: true )
+    .fromPath( "${params.input_dir}/*.fastq", checkIfExists: true )
     .map { file -> 
-        def key = file.simpleName.substring(0, 8)
-        return tuple( key, file )
+        def key = (file =~ /.{6}_(\w{1})_L\d{1}_(R\d{1}).fastq/)[0]
+        return tuple("sample_" + key[1] + "_" + key[2], file)
     }
     .groupTuple()
     .set { ch_grouped_fastq_files }
 
-process foo {
+// Process each group of fastq files
+process processEachGroup {
 
     tag "${key}"
     echo true
-    publishDir path: "${params.aws_output_bucket}"
+    publishDir path: "${params.output_dir}", mode: "copy"
 
     input:
     set key, file(fastq_files) from ch_grouped_fastq_files
@@ -24,7 +31,7 @@ process foo {
 
     script:
     """
-    cat ${fastq_files} >> ${key}.txt
+    cat ${fastq_files} >> ${key}.fastq
     """
 
 }
