@@ -1,10 +1,9 @@
 #!/usr/bin/env nextflow
 
 /*
-
-You need to execute a task for each record in a comma-separated 
-values (CSV) file.
-
+================================================================================
+AIM : Execute a certain task for each record in a CSV file.
+================================================================================
 */
 
 // Initialize parameter pointing to sample metadata file
@@ -20,6 +19,7 @@ Channel
 // Process each CSV record
 process processEachCSVRecord {
 
+    tag "${sample}"
     echo true
 
     input:
