@@ -1,5 +1,21 @@
 #!/usr/bin/env nextflow
 
+/*
+================================================================================
+Retrieve Versions
+--------------------------------------------------------------------------------
+For each process, the version of the used software tool is piped into a text 
+file. The name of the text file is structured as follows:
+
+    <<software-tool>>_version.txt
+
+This text file can be found in the work directory of the process itself. The 
+last process, i.e., createVersionFile, will collect all of the text files 
+containing the versions of the used software tools and concatenate them into 
+one text file.
+================================================================================
+*/
+
 process createFastQCFiles {
 
     publishDir path: "${projectDir}", mode: "copy"
